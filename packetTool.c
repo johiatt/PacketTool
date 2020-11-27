@@ -23,16 +23,56 @@ void print_app_usage(void)
 	printf("\n");
 	printf("Example:\n");
 	printf("    $: ./packetTool -d eth0 -f \"tcp port 80\"\n");
-
-
 return;
 }
 
+/* check port against common usage to determine package type */
 char* check_common_port(u_short sport, u_short dport) {
-	if(sport == 80 || dport == 80){
-		return "HTTP";
+
+
+	char* sport_string = check_port(sport);
+	char* dport_string = check_port(dport);
+
+	if(sport_string != "Unknown"){
+		return sport_string;
+	} else if(dport_string != "Unknown") {
+		return dport_string;
 	} else {
-		return "Unknown Type";
+		return "Unknown";
+	}
+}
+
+/* check port against common usage to determine package type */
+char* check_port(u_short port) {
+	switch(port) {
+		case 20 :
+			return "FTP";
+		case 21 :
+			return "FTP";
+		case 22 :
+			return "SSH";
+		case 23 : 
+			return "TELNET";
+		case 25 :
+			return "SMTP";
+		case 53 :
+			return "DNS";
+		case 67 :
+			return "DHCP";
+		case 68 :
+			return "DHCP";
+		case 80 :
+			return "HTTP";
+		case 110 :
+			return "POP3";
+		case 143 :
+			return "IMAP";
+		case 443 :
+			return "HTTPS";
+		case 3389 :
+			return "RDP";
+		default :
+			return "Unknown";
 	}
 }
 

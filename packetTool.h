@@ -88,5 +88,7 @@ print_hex_ascii_line(const u_char *payload, int len, int offset);
 
 char* check_common_port(u_short sport, u_short dport);
 
+char* check_port(u_short port);
+
 void print_app_usage(void);
 
