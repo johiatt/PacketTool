@@ -3,7 +3,7 @@ OBJS = packetTool.o
 EXE = packetTool
 LIBS = -lpcap
 
-all:packetTool.c packetTool.o
+all:packetTool.c packetTool.o packetTool
 
 
 debug:  CFLAGS += -g -O0
@@ -13,7 +13,7 @@ packetTool.o:  packetTool.c
 		gcc -c packetTool.c $(LIBS) -o packetTool.o 
 
 $(EXE): $(OBJS)
-		gcc $(CFLAGS) $^ -o $@
+		gcc $^ $(LIBS) -o $@
 
 clean:
 		rm *.o
