@@ -10,8 +10,30 @@
 #include <arpa/inet.h>
 #include "packetTool.h"
 
-char* check_common_port(u_short port) {
-	return 0;
+/*
+ * print help text
+ */
+void print_app_usage(void)
+{
+	printf("Usage: %s -d [device] -f \"[filter]\"\n", "packetTool");
+	printf("\n");
+	printf("Options:\n");
+	printf("    interface    Listen on <device> for packets. (leave blank for default)\n");
+	printf("    filter       Packet filter, for example \"udp port 20\". Quotes are required.\n");
+	printf("\n");
+	printf("Example:\n");
+	printf("    $: ./packetTool -d eth0 -f \"tcp port 80\"\n");
+
+
+return;
+}
+
+char* check_common_port(u_short sport, u_short dport) {
+	if(sport == 80 || dport == 80){
+		return "HTTP";
+	} else {
+		return "Unknown Type";
+	}
 }
 
 void
@@ -174,7 +196,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 		
 		printf("   Src port: %d\n", ntohs(tcp->th_sport));
 		printf("   Dst port: %d\n", ntohs(tcp->th_dport));
-		printf("   Packet Type: %d\n", ntohs(tcp->th_dport));
+		printf("   Packet Type: %s\n", check_common_port(ntohs(tcp->th_sport), ntohs(tcp->th_dport)));
 		
 		/* define/compute tcp payload (segment) offset */
 		payload = (u_char *)(packet + SIZE_ETHERNET + size_ip + size_tcp);
@@ -249,6 +271,7 @@ int main(int argc, char *argv[])
 		if (dev == NULL) {
 			fprintf(stderr, "Couldn't find default device: %s\n",
 			    errbuf);
+			print_app_usage();
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -257,17 +280,23 @@ int main(int argc, char *argv[])
 			dev = argv[2];
 			filter_exp = argv[4];
 		} else {
+			print_app_usage();
 			exit(EXIT_FAILURE);
 		}
 	}
-	else if(argc == 1) {	//no extra arguments
+	else if (argc == 1){	//no extra arguments
 		/* find a capture device if not specified on command-line */
 		dev = pcap_lookupdev(errbuf);
 		if (dev == NULL) {
 			fprintf(stderr, "Couldn't find default device: %s\n",
 			    errbuf);
+			print_app_usage();
 			exit(EXIT_FAILURE);
 		}
+	}
+	else {
+		print_app_usage();
+		exit(EXIT_FAILURE);
 	}
 	
 	/* get network number and mask associated with capture device */

@@ -16,4 +16,4 @@ $(EXE): $(OBJS)
 		gcc $^ $(LIBS) -o $@
 
 clean:
-		rm *.o
+		rm *.o packetTool
