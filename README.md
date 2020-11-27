@@ -4,7 +4,9 @@ A basic packet sniffer with custom filters, port recognition, and more.
 Coding paradigm: https://www.tcpdump.org/pcap.html
 
 
-Usage: ./packetTool -d [device] -f "[filter]"
+Usage: 
+
+    ./packetTool -d [device] -f "[filter]"
 
 Options:
 
@@ -16,4 +18,3 @@ Example:
 
     $: ./packetTool -d eth0 -f "tcp port 80"
 
-    
