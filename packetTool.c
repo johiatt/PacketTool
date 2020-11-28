@@ -198,6 +198,8 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 	int size_tls;
 	int size_payload;
 
+	char *packet_type;
+
 	printf("\nPacket number %d:\n", count);
 	count++;
 
@@ -248,9 +250,12 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 			return;
 		}
 
+		packet_type = check_common_port(ntohs(tcp->th_sport), ntohs(tcp->th_dport));
 		printf("   Src port: %d\n", ntohs(tcp->th_sport));
 		printf("   Dst port: %d\n", ntohs(tcp->th_dport));
-		printf("   Packet Type: %s\n", check_common_port(ntohs(tcp->th_sport), ntohs(tcp->th_dport)));
+		printf("   Packet Type: %s\n", packet_type);
+		
+		
 
 		/* define/compute tcp payload (segment) offset */
 		payload = (u_char *)(packet + SIZE_ETHERNET + size_ip + size_tcp);
@@ -276,12 +281,20 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 		//udp header is 8 bytes, going to hard set here... when is
 		size_udp = 8;
 
+		packet_type = check_common_port(ntohs(udp->uh_sport), ntohs(udp->uh_dport));
 		printf("   Src port: %d\n", ntohs(udp->uh_sport));
 		printf("   Dst port: %d\n", ntohs(udp->uh_dport));
+		printf("   Packet Type: %s\n", packet_type);
 
 		/* define/compute tcp payload (segment) offset */
 		//start of payload is right after datagram
 		payload = (u_char *)(packet + SIZE_ETHERNET + size_ip + size_udp);
+
+		/* handle DNS payload */
+		if(strcmp(packet_type, "DNS") == 0){
+			struct dns_payload *dns = (struct dns_payload *)(payload);
+			printf("   DNS Transaction ID: %x", dns -> transactionID);
+		}
 
 		/* compute tcp payload (segment) size */
 		size_payload = ntohs(ip->ip_len) - (size_ip + size_udp);

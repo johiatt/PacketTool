@@ -77,6 +77,17 @@ struct sniff_udp
     u_short uh_sum; /* checksum */
 };
 
+/* DNS Payload */
+typedef u_int dns_seq;
+struct dns_payload
+{
+    u_short transactionID;
+    u_short flags;
+
+};
+
+
+
 void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet);
 
 void print_payload(const u_char *payload, int len);
